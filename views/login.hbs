@@ -1,0 +1,19 @@
+<h1>Login</h1>
+
+<form method='post' action='/login'> 
+    <label for="type">Select your Identity:</label>
+  <select name="type">
+    <option value="Customer">Customer</option>
+    <option value="BookingAgent">BookingAgent</option>
+    <option value="AirlineStaff">AirlineStaff</option>
+  </select>
+    <div>
+        <label for=' name'>Name</label>
+        <input type='text' d="name" name="name" required>
+    </div> 
+    <div>
+        <label for='password'>password</label>
+        <input type='password' d="password" name="password" required>
+    </div> 
+    <div><input type='submit' value='Login'></div>
+</form>
