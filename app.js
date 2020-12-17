@@ -226,7 +226,7 @@ app.post('/',(req,res)=>{
             if (error){
                 res.render('error',{message:error.message});
             }else{
-                res.render('home_search_upcoming',{content:stringify(results[0])});
+                res.render('home_search_upcoming',{content:stringify(results)});
             }
         });
     }else if (req.body.action==='check_flight_status'){
@@ -243,7 +243,7 @@ app.post('/',(req,res)=>{
             }else{
                 console.log('here');
                 console.log(results[0]);
-                res.render('home_check_flight',{content:stringify(results[0])});
+                res.render('home_check_flight',{content:stringify(results)});
             }
         });
     } 
@@ -274,7 +274,7 @@ app.post('/user_home_customer',(req,res)=>{
             if (error){
                 res.render('error',{message:error.message});
             } else {
-                res.render('customer_view_my_flights',{content:stringify(results[0])});
+                res.render('customer_view_my_flights',{content:stringify(results)});
             }});
     } else if (req.body.action==="search_for_upcoming_flights"){
         //db query
@@ -313,7 +313,7 @@ app.post('/user_home_booking_agent',(req,res)=>{
             if (error){
                 res.render('error',{message:error.message});
             } else {
-                res.render('agent_view_my_flights',{content:stringify(results[0])});
+                res.render('agent_view_my_flights',{content:stringify(results)});
             }});
     } else if (req.body.action==="view_my_commission"){
         //todo db query
@@ -397,7 +397,7 @@ app.post('/user_home_airline_staff',(req,res)=>{
             if (error){
                 res.render('error',error.message);
             }else{
-                res.render('staff_view_my_flights',{content:stringify(results[0])});
+                res.render('staff_view_my_flights',{content:stringify(results)});
             }
         });
     } else if (req.body.action==="create_new_flights"){
