@@ -9,7 +9,7 @@
 
 SET @ticket_id := UNIX_TIMESTAMP(now());
 
-INSERT INTO ticket VALUES(@ticket_id, '${req.body.input_airline}', '${req.body.select_flight}');
+INSERT INTO ticket VALUES(@ticket_id, '${req.body.input_airline}', ${req.body.select_flight});
 
 -- if user type = "customer":
 INSERT INTO purchase VALUES (@ticket_id, '${req.session.data.email}', NULL, NOW());
