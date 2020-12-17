@@ -15,11 +15,11 @@
 -- passport_country
 -- date_of_birth
 
-INSERT INTO customer VALUES (${watermelon.email}, ${watermelon.name}, 
-	${watermelon.password}, ${watermelon.building_num}, ${watermelon.street}, 
-	${watermelon.city}, ${watermelon.state}, ${watermelon.phone_number}, 
-	${watermelon.passport_number}, ${watermelon.passport_expiration}, 
-	${watermelon.passport_country}, ${watermelon.date_of_birth});
+INSERT INTO customer VALUES (${req.body.email}, ${req.body.name}, 
+	${req.body.password}, ${req.body.building_num}, ${req.body.street}, 
+	${req.body.city}, ${req.body.state}, ${req.body.phone_number}, 
+	${req.body.passport_number}, ${req.body.passport_expiration}, 
+	${req.body.passport_country}, ${req.body.date_of_birth});
 
 -- automatically checks if the inputs satisfies the requirements: not null/unique 
 

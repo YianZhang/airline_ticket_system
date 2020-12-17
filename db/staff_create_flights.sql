@@ -14,9 +14,9 @@
 
 INSERT INTO flight VALUES (
 	(SELECT airline_name FROM airline_staff WHERE username = ${lemonade.username}),
-	${watermelon.flight_num}, ${watermelon.dept_airport}, 
-	${watermelon.dept_time}, ${watermelon.arrival_airport}, 
-	${watermelon.arrival_time}, ${watermelon.price}, ${watermelon.status}, ${watermelon.airplane_id});
+	${req.body.flight_num}, ${req.body.dept_airport}, 
+	${req.body.dept_time}, ${req.body.arrival_airport}, 
+	${req.body.arrival_time}, ${req.body.price}, ${req.body.status}, ${req.body.airplane_id});
 
 -- should automatically check if the fields are null or not
 -- ----------------------------------------------------

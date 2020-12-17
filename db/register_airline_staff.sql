@@ -10,9 +10,9 @@
 -- airline_name
 
 
-INSERT INTO airline_staff VALUES (${watermelon.username}, 
-	${password_hash}, ${watermelon.first_name}, ${watermelon.last_name}, 
-	${watermelon.date_of_birth}, ${watermelon.airline_name});
+INSERT INTO airline_staff VALUES (${req.body.username}, 
+	${password_hash}, ${req.body.first_name}, ${req.body.last_name}, 
+	${req.body.date_of_birth}, ${req.body.airline_name});
 
 -- automatically checks if the inputs satisfies the requirements: not null/unique 
 

@@ -66,7 +66,16 @@ app.post('/register',(req,res)=>{
 app.post('/register_customer',(req,res)=>{
     bcrypt.hash(req.body.password, 10, function(err, hash) {
         //db insert
-        
+        const quety = `INSERT INTO customer VALUES (${req.body.email}, ${req.body.name}, 
+            ${hash}, ${req.body.building_num}, ${req.body.street}, 
+            ${req.body.city}, ${req.body.state}, ${req.body.phone_number}, 
+            ${req.body.passport_number}, ${req.body.passport_expiration}, 
+            ${req.body.passport_country}, ${req.body.date_of_birth});`
+
+        con.query(query, function (error, results, fields) {
+            if (error) throw error;
+            console.log('testing');
+          });
     });
     //db insert
     console.log(req.body);

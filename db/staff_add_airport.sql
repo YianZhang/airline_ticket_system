@@ -5,7 +5,7 @@
 -- airport_name
 -- airport_city
 
-INSERT INTO airport VALUES (${watermelon.airport_name}, ${watermelon.airport_city});
+INSERT INTO airport VALUES (${req.body.airport_name}, ${req.body.airport_city});
 
 -- should automatically check if the fields are null (unique) or not
 -- ----------------------------------------------------

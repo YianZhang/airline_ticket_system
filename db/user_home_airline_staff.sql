@@ -33,10 +33,10 @@ AND f.departure_time < DATE_ADD(now(),INTERVAL 30 DAY);
 SELECT f.airline_name, f.flight_num, f.departure_airport, f.departure_time, 
 f.arrival_airport, f.arrival_time, f.status
 FROM flight as f, airline_staff as s
-WHERE f.airline_name = s.airline_name AND s.username = ${lemonade.username} AND f.flight_num = ${watermelon.flight_num} 
-AND f.departure_airport = ${watermelon.dept_airport} AND f.arrival_airport = ${watermelon.arrival_airport}
-AND f.status = ${watermelon.status} AND f.airplane_id = ${watermelon.airplane_id}
-AND f.departure_time > ${watermelon.start_date} AND f.departure_time < ${watermelon.end_date};
+WHERE f.airline_name = s.airline_name AND s.username = ${lemonade.username} AND f.flight_num = ${req.body.flight_num} 
+AND f.departure_airport = ${req.body.dept_airport} AND f.arrival_airport = ${req.body.arrival_airport}
+AND f.status = ${req.body.status} AND f.airplane_id = ${req.body.airplane_id}
+AND f.departure_time > ${req.body.start_date} AND f.departure_time < ${req.body.end_date};
 
 -- see all customers of a particular flight -> staff_flight_search
 

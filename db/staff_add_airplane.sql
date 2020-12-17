@@ -8,7 +8,7 @@
 
 INSERT INTO airplane VALUES (
 	(SELECT airline_name FROM airline_staff WHERE username = ${lemonade.username}), 
-	${watermelon.airplane_id}, ${watermelon.seats});
+	${req.body.airplane_id}, ${req.body.seats});
 
 -- should automatically check if the fields are null or not
 -- ----------------------------------------------------
