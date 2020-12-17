@@ -1,0 +1,15 @@
+<h1>staff_reports</h1>
+<a href="/user_home_airline_staff">user_home_airline_staff</a>
+<a href="/logout">Logout</a>
+
+<div>search flights for customer:</div>
+<form method='post' action='/staff_reports'> 
+    <div>
+        start_date: <input type='text' name="start_date">
+    </div> 
+     <div>
+        end_date: <input type='text' name="end_date">
+    </div> 
+    <input type="submit" value="search" />
+</form>
+{{content}}

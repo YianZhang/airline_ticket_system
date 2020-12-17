@@ -187,6 +187,8 @@ app.post('/user_home_airline_staff',(req,res)=>{
         res.render('staff_add_airport');
     } else if (req.body.action==="view_frequent_customers"){
         res.render('staff_freq_customer');
+    } else if (req.body.action==="view_reports"){
+        res.render('staff_reports');
     }
     //else if
 })
