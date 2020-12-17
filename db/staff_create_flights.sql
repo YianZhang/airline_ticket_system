@@ -13,7 +13,7 @@
 -- airplane_id
 
 INSERT INTO flight VALUES (
-	(SELECT airline_name FROM airline_staff WHERE username = '${lemonade.username}'),
+	(SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}'),
 	${req.body.flight_num}, '${req.body.dept_airport}', 
 	'${req.body.dept_time}', '${req.body.arrival_airport}', 
 	'${req.body.arrival_time}', ${req.body.price}, '${req.body.status}', ${req.body.airplane_id});

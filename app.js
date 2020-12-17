@@ -230,9 +230,18 @@ app.post('/',(req,res)=>{
 app.post('/user_home_customer',(req,res)=>{
     //todo identity check
     if (req.body.action==="view_my_flights"){
-        console.log('testing');
+        const query = `SELECT f.airline_name, f.flight_num, f.departure_airport, f.departure_time, 
+        f.arrival_airport, f.arrival_time, f.status
+        FROM purchases as p, ticket as t, flight as f
+        WHERE p.ticket_id = t.ticket_id AND t.airline_name = f.airline_name AND t.flight_num = f.flight_num 
+        AND f.departure_time > now() AND p.customer_email = '${req.session.data.email}';`
         //todo db query
-        res.render('customer_view_my_flights',{content:'test'});
+        con.query(query, function (error, results){
+            if (error){
+                res.render('error',{message:error.message});
+            } else {
+                res.render('customer_view_my_flights',{content:'test'});
+            }});
     } else if (req.body.action==="search_for_upcoming_flights"){
         //db query
         res.render('customer_search_upcoming',{content:'test'});
