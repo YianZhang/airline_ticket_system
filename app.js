@@ -64,15 +64,19 @@ app.post('/register',(req,res)=>{
 })
 
 app.post('/register_customer',(req,res)=>{
+    bcrypt.hash(req.body.password, 10, function(err, hash) {
+        //db insert
+        
+    });
     //db insert
     console.log(req.body);
     res.redirect('/');
-    //res.sendFile(path.join(__dirname, '/public/home_page.html'));
 })
 
 app.post('/register_booking_agent',(req,res)=>{
     //db insert
     console.log(req.body);
+    res.redirect('/');
     //res.sendFile(path.join(__dirname, '/public/home_page.html'));
 })
 
@@ -205,5 +209,6 @@ app.post('/staff_view_my_flights',(req,res)=>{
 //todo: post staff_add_airplane
 //todo: post staff_add_airport
 //todo: post staff_freq_customer
+//todo: post staff_reports
 app.listen(3000);
 console.log('running');
