@@ -11,7 +11,7 @@
 SELECT SUM(f.price)
 FROM purchases as p, ticket as t, flight as f
 WHERE p.ticket_id = t.ticket_id AND f.airline_name = t.airline_name AND f.flight_num = t.flight_num
-AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = ${lemonade.username})
+AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${lemonade.username}')
 AND p.booking_agent_id is null AND p.purchase_date > DATE_SUB(now(), INTERVAL 1 MONTH);
 
 -- total amount of revenue earned from direct sales 
@@ -21,7 +21,7 @@ AND p.booking_agent_id is null AND p.purchase_date > DATE_SUB(now(), INTERVAL 1 
 SELECT SUM(f.price)
 FROM purchases as p, ticket as t, flight as f
 WHERE p.ticket_id = t.ticket_id AND f.airline_name = t.airline_name AND f.flight_num = t.flight_num
-AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = ${lemonade.username})
+AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${lemonade.username}')
 AND p.booking_agent_id is null AND p.purchase_date > DATE_SUB(now(), INTERVAL 1 YEAR);
 
 -- total amount of revenue earned from indirect sales 
@@ -31,7 +31,7 @@ AND p.booking_agent_id is null AND p.purchase_date > DATE_SUB(now(), INTERVAL 1 
 SELECT SUM(f.price)
 FROM purchases as p, ticket as t, flight as f
 WHERE p.ticket_id = t.ticket_id AND f.airline_name = t.airline_name AND f.flight_num = t.flight_num
-AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = ${lemonade.username})
+AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${lemonade.username}')
 AND p.booking_agent_id is not null AND p.purchase_date > DATE_SUB(now(), INTERVAL 1 MONTH);
 
 -- total amount of revenue earned from indirect sales 
@@ -41,7 +41,7 @@ AND p.booking_agent_id is not null AND p.purchase_date > DATE_SUB(now(), INTERVA
 SELECT SUM(f.price)
 FROM purchases as p, ticket as t, flight as f
 WHERE p.ticket_id = t.ticket_id AND f.airline_name = t.airline_name AND f.flight_num = t.flight_num
-AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = ${lemonade.username})
+AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${lemonade.username}')
 AND p.booking_agent_id is not null AND p.purchase_date > DATE_SUB(now(), INTERVAL 1 YEAR);
 
 -- ----------------------------------------------------
