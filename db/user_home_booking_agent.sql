@@ -41,15 +41,12 @@ GROUP BY p.booking_agent_id;
 
 -- average commission received per ticket booked in the past 30 days:
 
-SELECT commission_past_30_days/ticket_num as average_commission
-FROM (
-SELECT 0.1 * SUM(f.price) as commission_past_30_days, COUNT(DISTINCT p.ticket_id) as ticket_num
+SELECT commission_past_30_days / ticket_num as average_commission FROM (SELECT 0.1 * SUM(f.price) as commission_past_30_days, COUNT(DISTINCT p.ticket_id) as ticket_num
 FROM purchases as p, ticket as t, flight as f
 WHERE p.ticket_id = t.ticket_id AND t.airline_name = f.airline_name AND t.flight_num = f.flight_num
-AND p.booking_agent_id = (SELECT booking_agent_id FROM booking_agent WHERE email = '${req.session.data.email}') 
-AND p.purchase_date > DATE_SUB(now(),INTERVAL 30 DAY)
-GROUP BY p.booking_agent_id
-);
+AND p.booking_agent_id = (SELECT booking_agent_id FROM booking_agent WHERE email = 'bb@nyu.edu') 
+AND p.purchase_date > DATE_SUB(curdate(),INTERVAL 30 DAY)
+GROUP BY p.booking_agent_id) as subquery;
 
 -- total number of tickets sold in the past 30 days:
 

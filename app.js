@@ -317,15 +317,12 @@ app.post('/user_home_booking_agent',(req,res)=>{
         AND p.purchase_date > DATE_SUB(now(),INTERVAL 30 DAY)
         GROUP BY p.booking_agent_id;`
 
-        const query2 = `SELECT commission_past_30_days/ticket_num as average_commission
-        FROM (
-        SELECT 0.1 * SUM(f.price) as commission_past_30_days, COUNT(DISTINCT p.ticket_id) as ticket_num
+        const query2 = `SELECT commission_past_30_days / ticket_num as average_commission FROM (SELECT 0.1 * SUM(f.price) as commission_past_30_days, COUNT(DISTINCT p.ticket_id) as ticket_num
         FROM purchases as p, ticket as t, flight as f
         WHERE p.ticket_id = t.ticket_id AND t.airline_name = f.airline_name AND t.flight_num = f.flight_num
         AND p.booking_agent_id = (SELECT booking_agent_id FROM booking_agent WHERE email = '${req.session.data.email}') 
-        AND p.purchase_date > DATE_SUB(now(),INTERVAL 30 DAY)
-        GROUP BY p.booking_agent_id
-        );`
+        AND p.purchase_date > DATE_SUB(curdate(),INTERVAL 30 DAY)
+        GROUP BY p.booking_agent_id) as subquery;`
         
         const query3 = `SELECT COUNT(DISTINCT p.ticket_id) as total_tickets
         FROM purchases as p, ticket as t, flight as f
@@ -343,11 +340,11 @@ app.post('/user_home_booking_agent',(req,res)=>{
                     if (error2){
                         res.render('error',{message:error2.message});
                     } else {
-                        con.query(query3, function(error3, results2){
+                        con.query(query3, function(error3, results3){
                             if (error3){
                                 res.render('error',{message:error3.message});
                             } else {
-                                res.render('agent_vier_my_commission',{total_commission:results1[0].total_commision, average_commission:results2[0].average_commission, total_tickets:results3[0].total_tickets})
+                                res.render('agent_view_commission',{total_commission:results1[0].total_commission, average_commission:results2[0].average_commission, total_tickets:results3[0].total_tickets})
                             }
                         })
                     }
@@ -384,8 +381,18 @@ app.post('/user_home_airline_staff',(req,res)=>{
         //db query
         res.render('staff_check_flight',{content:'test'});
     }  else if (req.body.action==="view_my_flights"){
-        //todo db query
-        res.render('staff_view_my_flights',{content:'test'});
+        const query = `SELECT f.airline_name, f.flight_num, f.departure_airport, f.departure_time, 
+        f.arrival_airport, f.arrival_time, f.status
+        FROM flight as f, airline_staff as s
+        WHERE s.airline_name = f.airline_name AND s.username = '${req.session.data.username}' AND f.departure_time > now()
+        AND f.departure_time < DATE_ADD(now(),INTERVAL 30 DAY);`
+        con.query(query,function(error,results){
+            if (error){
+                res.render('error',error.message);
+            }else{
+                res.render('staff_view_my_flights',{content:JSON.stringify(results[0])});
+            }
+        });
     } else if (req.body.action==="create_new_flights"){
         //todo db query
         res.render('staff_create_flights',{content:'test'});
