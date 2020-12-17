@@ -1,0 +1,30 @@
+<h1>staff_view_my_flights</h1>
+<a href="/user_home_airline_staff">user_home_airline_staff</a>
+<a href="/logout">Logout</a>
+
+<form method='post' action='/staff_view_my_flights'> 
+    <div>
+        flight_num: <input type='text' name="flight_num">
+    </div> 
+    <div>
+        dept_airport: <input type='text' name="dept_airport">
+    </div> 
+    <div>
+        dept_time: <input type='text' name="dept_time">
+    </div> 
+    <div>
+        arrival_airport: <input type='text' name="arrival_airport">
+    </div> 
+    <div>
+        arrival_time: <input type='text' name="arrival_time">
+    </div> 
+    <div>
+        status: <input type='text' name="status">
+    </div> 
+    <div>
+        airplane_id: <input type='text' name="airplane_id">
+    </div> 
+    
+    <input type="submit" value="search" />
+</form>
+{{content}}

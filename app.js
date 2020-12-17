@@ -119,6 +119,9 @@ app.post('/user_home_customer',(req,res)=>{
     } else if (req.body.action==='check_flight_status'){
         //db query
         res.render('customer_check_flight',{content:'test'});
+    } else if (req.body.action==='track_my_spending'){
+        //db query
+        res.render('customer_spending',{content:'test_spending'});
     } 
     //else if
 })
@@ -138,7 +141,11 @@ app.post('/user_home_booking_agent',(req,res)=>{
     } else if (req.body.action==="view_my_flights"){
         //todo db query
         res.render('agent_view_my_flights',{content:'test'});
+    } else if (req.body.action==="view_my_commission"){
+        //todo db query
+        res.render('agent_view_commission',{total_commission:'test',average_commission:'test',total_tickets:'test'});
     }
+    //todo: db query
 })
 
 app.post('/agent_search_flights',(req,res)=>{
@@ -149,6 +156,12 @@ app.post('/agent_search_flights',(req,res)=>{
     res.redirect('/user_home_booking_agent');
 })
 
+app.post('/agent_view_commission',(req,res)=>{
+    //agent view commission
+    //todo identity check
+    console.log(req.body.start_date, req.body.end_date);
+    //todo db query
+})
 
 
 //STAFF
@@ -160,9 +173,35 @@ app.post('/user_home_airline_staff',(req,res)=>{
     } else if (req.body.action==='check_flight_status'){
         //db query
         res.render('staff_check_flight',{content:'test'});
-    } 
+    }  else if (req.body.action==="view_my_flights"){
+        //todo db query
+        res.render('staff_view_my_flights',{content:'test'});
+    } else if (req.body.action==="create_new_flights"){
+        //todo db query
+        res.render('staff_create_flights',{content:'test'});
+    } else if (req.body.action==="change_status_of_flights"){
+        res.render('staff_flight_status');
+    } else if (req.body.action==="add_airplane_in_the_system"){
+        res.render('staff_add_airplane');
+    } else if (req.body.action==="add_new_airport_in_the_system"){
+        res.render('staff_add_airport');
+    } else if (req.body.action==="view_frequent_customers"){
+        res.render('staff_freq_customer');
+    }
     //else if
 })
 
+app.post('/staff_view_my_flights',(req,res)=>{
+    //agent view commission
+    //todo identity check
+    console.log(req.body);
+    //todo db query
+    //res.render
+})
+
+//todo: post staff_flight_status  (change status)
+//todo: post staff_add_airplane
+//todo: post staff_add_airport
+//todo: post staff_freq_customer
 app.listen(3000);
 console.log('running');

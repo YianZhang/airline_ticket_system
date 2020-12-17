@@ -1,0 +1,19 @@
+<h1>agent_view_commission</h1>
+<a href="/user_home_booking_agent">user_home_booking_agent</a>
+
+<div>Your total amount of commission received (default: past 30 days): {{total_commission}}</div>
+
+<div>Average commission received per ticket booked (default: past 30 days): {{average_commission}}</div>
+
+<div>Total number of tickets sold (default: past 30 days): {{total_tickets}}</div>
+
+<form method='post' action='/agent_view_commission'> 
+    <div>
+        start_date: <input type='text' name="start_date">
+    </div> 
+    <div>
+        end_date: <input type='text' name="end_date">
+    </div> 
+    
+    <input type="submit" value="view_commission" />
+</form>

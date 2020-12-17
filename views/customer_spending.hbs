@@ -1,0 +1,19 @@
+<h1>customer_spending</h1>
+<a href="/user_home_customer">user_home_customer</a>
+
+<div>total amount of money spent in the past year: {{content}}</div>
+
+<div>bar chart:
+<form method='post' action='/customer_search_upcoming'> 
+    <div>
+        start_month: <input type='text' name="start_month">
+    </div> 
+    <div>
+        end_month: <input type='text' name="end_month">
+    </div> 
+    
+    <input type="submit" value="search
+    " />
+</form>
+
+</div>

@@ -1,0 +1,16 @@
+<h1>staff_freq_customer</h1>
+<a href="/user_home_airline_staff">user_home_airline_staff</a>
+<a href="/logout">Logout</a>
+
+<div>
+most frequent customer within the last year: {{top_customer}}
+</div>
+
+<div>search flights for customer:</div>
+<form method='post' action='/staff_freq_customer'> 
+    <div>
+        email: <input type='text' name="email">
+    </div> 
+    <input type="submit" value="search" />
+</form>
+{{content}}
