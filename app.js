@@ -267,7 +267,7 @@ app.post('/user_home_customer',(req,res)=>{
             if (error){
                 res.render('error',{message:error.message});
             } else {
-                res.render('customer_view_my_flights',{content:results[0]});
+                res.render('customer_view_my_flights',{content:JSON.stringify(results[0])});
             }});
     } else if (req.body.action==="search_for_upcoming_flights"){
         //db query
@@ -306,7 +306,7 @@ app.post('/user_home_booking_agent',(req,res)=>{
             if (error){
                 res.render('error',{message:error.message});
             } else {
-                res.render('agent_view_my_flights',{content:results[0]});
+                res.render('agent_view_my_flights',{content:JSON.stringify(results[0])});
             }});
     } else if (req.body.action==="view_my_commission"){
         //todo db query
