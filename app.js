@@ -267,7 +267,7 @@ app.post('/user_home_customer',(req,res)=>{
             if (error){
                 res.render('error',{message:error.message});
             } else {
-                res.render('customer_view_my_flights',{content:'test'});
+                res.render('customer_view_my_flights',{content:results[0]});
             }});
     } else if (req.body.action==="search_for_upcoming_flights"){
         //db query
@@ -296,7 +296,18 @@ app.post('/user_home_booking_agent',(req,res)=>{
         res.render('agent_check_flight',{content:'test'});
     } else if (req.body.action==="view_my_flights"){
         //todo db query
-        res.render('agent_view_my_flights',{content:'test'});
+        const query = `SELECT f.airline_name, f.flight_num, f.departure_airport, f.departure_time, 
+        f.arrival_airport, f.arrival_time, f.status
+        FROM purchases as p, ticket as t, flight as f
+        WHERE p.ticket_id = t.ticket_id AND t.airline_name = f.airline_name AND t.flight_num = f.flight_num
+        AND p.booking_agent_id = (SELECT booking_agent_id FROM booking_agent WHERE email = '${req.session.data.email}') 
+        AND f.departure_time > now();`;
+        con.query(query, function (error, results){
+            if (error){
+                res.render('error',{message:error.message});
+            } else {
+                res.render('agent_view_my_flights',{content:results[0]});
+            }});
     } else if (req.body.action==="view_my_commission"){
         //todo db query
         res.render('agent_view_commission',{total_commission:'test',average_commission:'test',total_tickets:'test'});
