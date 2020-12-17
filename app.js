@@ -310,7 +310,50 @@ app.post('/user_home_booking_agent',(req,res)=>{
             }});
     } else if (req.body.action==="view_my_commission"){
         //todo db query
-        res.render('agent_view_commission',{total_commission:'test',average_commission:'test',total_tickets:'test'});
+        const query1 = `SELECT 0.1 * SUM(f.price) as total_commission
+        FROM purchases as p, ticket as t, flight as f
+        WHERE p.ticket_id = t.ticket_id AND t.airline_name = f.airline_name AND t.flight_num = f.flight_num
+        AND p.booking_agent_id = (SELECT booking_agent_id FROM booking_agent WHERE email = '${req.session.data.email}') 
+        AND p.purchase_date > DATE_SUB(now(),INTERVAL 30 DAY)
+        GROUP BY p.booking_agent_id;`
+
+        const query2 = `SELECT commission_past_30_days/ticket_num as average_commission
+        FROM (
+        SELECT 0.1 * SUM(f.price) as commission_past_30_days, COUNT(DISTINCT p.ticket_id) as ticket_num
+        FROM purchases as p, ticket as t, flight as f
+        WHERE p.ticket_id = t.ticket_id AND t.airline_name = f.airline_name AND t.flight_num = f.flight_num
+        AND p.booking_agent_id = (SELECT booking_agent_id FROM booking_agent WHERE email = '${req.session.data.email}') 
+        AND p.purchase_date > DATE_SUB(now(),INTERVAL 30 DAY)
+        GROUP BY p.booking_agent_id
+        );`
+        
+        const query3 = `SELECT COUNT(DISTINCT p.ticket_id) as total_tickets
+        FROM purchases as p, ticket as t, flight as f
+        WHERE p.ticket_id = t.ticket_id AND t.airline_name = f.airline_name AND t.flight_num = f.flight_num
+        AND p.booking_agent_id = (SELECT booking_agent_id FROM booking_agent WHERE email = '${req.session.data.email}') 
+        AND p.purchase_date > DATE_SUB(now(),INTERVAL 30 DAY)
+        GROUP BY p.booking_agent_id;`
+
+        con.query(query1, function(error1, results1){
+            if (error1){
+                res.render('error',{message:error1.message});
+            } else {
+                console.log(results1);
+                con.query(query2, function(error2,results2){
+                    if (error2){
+                        res.render('error',{message:error2.message});
+                    } else {
+                        con.query(query3, function(error3, results2){
+                            if (error3){
+                                res.render('error',{message:error3.message});
+                            } else {
+                                res.render('agent_vier_my_commission',{total_commission:results1[0].total_commision, average_commission:results2[0].average_commission, total_tickets:results3[0].total_tickets})
+                            }
+                        })
+                    }
+                })
+            }
+        })
     }
     //todo: db query
 })
