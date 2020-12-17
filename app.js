@@ -1,9 +1,28 @@
-require('./db');
+const mysql = require('mysql');
+
+const con = mysql.createConnection({
+  host: "localhost",
+  port: "8889",
+  user: "root",
+  password: "root",
+  database : 'airport_system',
+});
+
+con.connect(function(err) {
+  if (err) throw err;
+  console.log("Connected!");
+});
+
+con.query('SELECT * FROM Airline', function (error, results, fields) {
+	if (error) throw error;
+	console.log('The selection result is: ', results[0]);
+  });
 
 const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const path = require('path');
+const { EDESTADDRREQ } = require('constants');
 
 const app = express();
 //console.log(path.join(__dirname,'./public'));
@@ -46,8 +65,27 @@ const namePassword = {};
 //toy
 app.post('/login',(req,res)=>{
     //todo db query and cache data
-    console.log(req.body.name, req.body.password,req.body.type);
-    res.redirect('user_home_'+req.body.type);
+        //console.log(req.body);
+    const query = `SELECT ${req.body.type} FROM customer WHERE email = '${req.body.username}';`
+    con.query(query, function (error, results){
+        if (error){
+            res.render('error',{message:error.message});
+        } else{
+            bcrypt.compare(req.body.password,results[0]['password'],(err,result)=>{
+                if (err){
+                    res.render('error',{message:err.message});
+                    console.error(err);
+                }else if (!result){
+                    res.render('error',{message:'wrong password'});
+                }else{
+                    req.session.data=results[0];
+                    res.redirect('/user_home_customer');
+                }
+            });
+        }
+    })
+  
+    //console.log(req.body.name, req.body.password,req.body.type);
 })
 
 app.get('/logout',(req,res)=>{
@@ -65,21 +103,26 @@ app.post('/register',(req,res)=>{
 
 app.post('/register_customer',(req,res)=>{
     bcrypt.hash(req.body.password, 10, function(err, hash) {
-        //db insert
-        const quety = `INSERT INTO customer VALUES (${req.body.email}, ${req.body.name}, 
-            ${hash}, ${req.body.building_num}, ${req.body.street}, 
-            ${req.body.city}, ${req.body.state}, ${req.body.phone_number}, 
-            ${req.body.passport_number}, ${req.body.passport_expiration}, 
-            ${req.body.passport_country}, ${req.body.date_of_birth});`
+        //db insert2-
+        console.log('test');
+        //const query = `INSERT INTO customer VALUES (${req.body.email}, ${req.body.name}, ${hash}, ${req.body.building_num}, ${req.body.street}, ${req.body.city}, ${req.body.state}, ${req.body.phone_number}, ${req.body.passport_number}, ${req.body.passport_expiration}, ${req.body.passport_country}, ${req.body.date_of_birth});`
+        const query = `INSERT INTO customer VALUES ('${req.body.email}', '${req.body.name}', 
+            '${hash}', '${req.body.building_num}', '${req.body.street}', 
+            '${req.body.city}', '${req.body.state}', ${req.body.phone_number}, 
+            '${req.body.passport_number}', '${req.body.passport_expiration}', 
+            '${req.body.passport_country}', '${req.body.date_of_birth}')`
 
         con.query(query, function (error, results, fields) {
-            if (error) throw error;
-            console.log('testing');
+            if (error){
+                res.render('error',{message:error.message});
+            } else{
+                
+                res.redirect('/');
+            }
+            console.log(results);
+            
           });
     });
-    //db insert
-    console.log(req.body);
-    res.redirect('/');
 })
 
 app.post('/register_booking_agent',(req,res)=>{
