@@ -54,15 +54,15 @@ app.use((req,res,next)=>{
         console.log('test');
         if (!req.session.hasOwnProperty('data') || req.session.data.type!=='booking_agent'){
             res.render('error',{message:'you have no right to access this page'});
-        }
+        } else {next();}
     } else if (req.url.startsWith('/customer_') || req.url.startsWith('/user_home_customer')){
         if (!req.session.hasOwnProperty('data') || req.session.data.type!=='customer'){
             res.render('error',{message:'you have no right to access this page'});
-        }
+        } else {next();}
     } else if (req.url.startsWith('/staff_') || req.url.startsWith('/user_home_airline_staff')){
         if (!req.session.hasOwnProperty('data') || req.session.data.type!=='airline_staff'){
             res.render('error',{message:'you have no right to access this page'});
-        }
+        } else {next();}
     } else {
         next();
     }
@@ -116,6 +116,7 @@ app.post('/login',(req,res)=>{
                     res.render('error',{message:'wrong password'});
                 }else{
                     req.session.data=results[0];
+                    req.session.data.type=req.body.type;
                     res.redirect('/user_home_'+req.body.type);
                 }
             });
