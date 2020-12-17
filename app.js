@@ -179,8 +179,24 @@ app.post('/register_airline_staff',(req,res)=>{
 app.post('/',(req,res)=>{
     console.log(req.body);
     if (req.body.action==='search_for_upcoming_flights'){
-        //db query
-        res.render('home_search_upcoming',{content:'test'});
+
+        const query = `SELECT f.airline_name, f.flight_num, f.departure_airport, dep_a.airport_city, 
+        f.arrival_airport, arr_a.airport_city, f.departure_time, f.arrival_time, f.price
+        FROM flight as f, airport as dep_a, airport as arr_a
+        WHERE f.departure_airport = dep_a.airport_name AND f.arrival_airport = arr_a.airport_name AND 
+        (f.departure_airport = '${req.body.departure_airport_or_city}' || dep_a.airport_city = '${req.body.departure_airport_or_city}') 
+        AND (f.arrival_airport = '${req.body.arrival_airport_or_city}' || arr_a.airport_city = '${req.body.arrival_airport_or_city}')
+        AND DATE(f.departure_time) = '${req.body.flight_date}' AND f.departure_time > now();`
+        
+        con.query(query,function (error,results){
+            if (error){
+                res.render('error',error.message);
+            }else{
+                console.log('here');
+                console.log(results[0]);
+                res.render('home_search_upcoming',{content:JSON.stringify(results[0])});
+            }
+        });
     }else if (req.body.action==='check_flight_status'){
         //db query
         res.render('home_check_flight',{content:'test'});
