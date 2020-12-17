@@ -16,7 +16,7 @@
 -- date_of_birth
 
 INSERT INTO customer VALUES (${req.body.email}, ${req.body.name}, 
-	${req.body.password}, ${req.body.building_num}, ${req.body.street}, 
+	${password_hash}, ${req.body.building_num}, ${req.body.street}, 
 	${req.body.city}, ${req.body.state}, ${req.body.phone_number}, 
 	${req.body.passport_number}, ${req.body.passport_expiration}, 
 	${req.body.passport_country}, ${req.body.date_of_birth});
