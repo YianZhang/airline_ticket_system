@@ -23,6 +23,7 @@ const session = require('express-session');
 const bcrypt = require('bcrypt');
 const path = require('path');
 const { EDESTADDRREQ } = require('constants');
+const { read } = require('fs');
 
 const app = express();
 //console.log(path.join(__dirname,'./public'));
@@ -66,11 +67,21 @@ const namePassword = {};
 app.post('/login',(req,res)=>{
     //todo db query and cache data
         //console.log(req.body);
-    const query = `SELECT ${req.body.type} FROM customer WHERE email = '${req.body.username}';`
+    let query;
+    if (req.body.type==='airline_staff'){
+        query = `SELECT * FROM airline_staff WHERE username = '${req.body.username}';`
+    }
+    else{
+        query = `SELECT * FROM ${req.body.type} WHERE email = '${req.body.username}';`
+    }
+    console.log(query);
     con.query(query, function (error, results){
         if (error){
             res.render('error',{message:error.message});
-        } else{
+        } else if (results.length===0){
+            res.render('error',{message:'no such account'});
+        }
+        else {
             bcrypt.compare(req.body.password,results[0]['password'],(err,result)=>{
                 if (err){
                     res.render('error',{message:err.message});
@@ -90,6 +101,7 @@ app.post('/login',(req,res)=>{
 
 app.get('/logout',(req,res)=>{
     //todo: cookies
+    delete req.session.data;
     console.log('logged out');
     res.redirect('/login');
 })
@@ -116,7 +128,6 @@ app.post('/register_customer',(req,res)=>{
             if (error){
                 res.render('error',{message:error.message});
             } else{
-                
                 res.redirect('/');
             }
             console.log(results);
@@ -126,10 +137,35 @@ app.post('/register_customer',(req,res)=>{
 })
 
 app.post('/register_booking_agent',(req,res)=>{
-    //db insert
-    console.log(req.body);
-    res.redirect('/');
-    //res.sendFile(path.join(__dirname, '/public/home_page.html'));
+    bcrypt.hash(req.body.password, 10, function(err, hash) {
+        const query = `INSERT INTO booking_agent VALUES ('${req.body.email}', '${hash}', ${req.body.booking_agent_id});`
+        con.query(query, function (error, results, fields) {
+            if (error){
+                res.render('error',{message:error.message});
+            } else{
+                res.redirect('/');
+            }
+            console.log(results);
+            
+          });
+    });
+})
+
+app.post('/register_airline_staff',(req,res)=>{
+    bcrypt.hash(req.body.password, 10, function(err, hash) {
+        const query = `INSERT INTO airline_staff VALUES ('${req.body.username}', 
+        '${hash}', '${req.body.first_name}', '${req.body.last_name}', 
+        '${req.body.date_of_birth}', '${req.body.airline_name}');`
+        con.query(query, function (error, results, fields) {
+            if (error){
+                res.render('error',{message:error.message});
+            } else{
+                res.redirect('/');
+            }
+            console.log(results);
+            
+          });
+    });
 })
 
 app.post('/register_airline_staff',(req,res)=>{
