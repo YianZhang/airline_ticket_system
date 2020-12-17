@@ -190,16 +190,28 @@ app.post('/',(req,res)=>{
         
         con.query(query,function (error,results){
             if (error){
-                res.render('error',error.message);
+                res.render('error',{message:error.message});
             }else{
-                console.log('here');
-                console.log(results[0]);
                 res.render('home_search_upcoming',{content:JSON.stringify(results[0])});
             }
         });
     }else if (req.body.action==='check_flight_status'){
-        //db query
-        res.render('home_check_flight',{content:'test'});
+        const query = `SELECT airline_name, flight_num, departure_airport, arrival_airport, 
+        departure_time, arrival_time, status
+        FROM flight 
+        WHERE flight_num = ${req.body.flight_number} 
+        AND (DATE(departure_time) = '${req.body.departure_date}' || DATE(arrival_time) = '${req.body.arrival_date}');`
+        
+        con.query(query,function (error,results){
+            if (error){
+                console.log('where');
+                res.render('error',{message:error.message});
+            }else{
+                console.log('here');
+                console.log(results[0]);
+                res.render('home_check_flight',{content:JSON.stringify(results[0])});
+            }
+        });
     } 
 })
 
