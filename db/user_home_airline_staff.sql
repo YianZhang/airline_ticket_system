@@ -15,7 +15,7 @@
 SELECT f.airline_name, f.flight_num, f.departure_airport, f.departure_time, 
 f.arrival_airport, f.arrival_time, f.status
 FROM flight as f, airline_staff as s
-WHERE s.airline_name = f.airline_name AND s.username = ${lemonade.username} AND f.departure_time > now()
+WHERE s.airline_name = f.airline_name AND s.username = '${lemonade.username}' AND f.departure_time > now()
 AND f.departure_time < DATE_ADD(now(),INTERVAL 30 DAY);
 
 -- query for "search flight" (within this airline)
@@ -33,10 +33,10 @@ AND f.departure_time < DATE_ADD(now(),INTERVAL 30 DAY);
 SELECT f.airline_name, f.flight_num, f.departure_airport, f.departure_time, 
 f.arrival_airport, f.arrival_time, f.status
 FROM flight as f, airline_staff as s
-WHERE f.airline_name = s.airline_name AND s.username = ${lemonade.username} AND f.flight_num = ${req.body.flight_num} 
-AND f.departure_airport = ${req.body.dept_airport} AND f.arrival_airport = ${req.body.arrival_airport}
-AND f.status = ${req.body.status} AND f.airplane_id = ${req.body.airplane_id}
-AND f.departure_time > ${req.body.start_date} AND f.departure_time < ${req.body.end_date};
+WHERE f.airline_name = s.airline_name AND s.username = '${lemonade.username}' AND f.flight_num = ${req.body.flight_num} 
+AND f.departure_airport = '${req.body.dept_airport}' AND f.arrival_airport = '${req.body.arrival_airport}'
+AND f.status = '${req.body.status}' AND f.airplane_id = ${req.body.airplane_id}
+AND f.departure_time > '${req.body.start_date}' AND f.departure_time < '${req.body.end_date}';
 
 -- see all customers of a particular flight -> staff_flight_search
 
@@ -72,7 +72,7 @@ AND f.departure_time > ${req.body.start_date} AND f.departure_time < ${req.body.
 
 SELECT p.booking_agent_id, COUNT(t.ticket_id) as total_number_of_ticket_sales
 FROM purchases as p, ticket as t, airline_staff as s
-WHERE p.ticket_id = t.ticket_id AND s.username = ${lemonade.username}
+WHERE p.ticket_id = t.ticket_id AND s.username = '${lemonade.username}'
 AND s.airline_name = t.airline_name
 AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 MONTH)
 AND p.booking_agent_id is not null
@@ -82,7 +82,7 @@ GROUP BY p.booking_agent_id;
 
 SELECT p.booking_agent_id, COUNT(t.ticket_id) as total_number_of_ticket_sales
 FROM purchases as p, ticket as t, airline_staff as s
-WHERE p.ticket_id = t.ticket_id AND s.username = ${lemonade.username}
+WHERE p.ticket_id = t.ticket_id AND s.username = '${lemonade.username}'
 AND s.airline_name = t.airline_name
 AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 YEAR)
 AND p.booking_agent_id is not null
@@ -94,7 +94,7 @@ SELECT p.booking_agent_id, 0.1 * SUM(f.price) as total_amount_of_commission_rece
 FROM purchases as p, ticket as t, flight as f, airline_staff as s
 WHERE p.ticket_id = t.ticket_id AND t.airline_name = f.airline_name AND t.flight_num = f.flight_num 
 AND t.airline_name = s.airline_name
-AND s.username = ${lemonade.username} AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 YEAR)
+AND s.username = '${lemonade.username}' AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 YEAR)
 AND p.booking_agent_id is not null
 GROUP BY p.booking_agent_id;
 
@@ -110,14 +110,14 @@ GROUP BY p.booking_agent_id;
 SELECT p.customer_email as top_customer -- , COUNT(DISTINCT t.ticket_id) as total_number_of_tickets_purchased
 FROM purchases as p, ticket as t
 WHERE t.ticket_id = p.ticket_id 
-AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = ${lemonade.username})
+AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${lemonade.username}')
 AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 YEAR)
 GROUP BY p.customer_email
 HAVING COUNT(DISTINCT t.ticket_id) >= all (
 SELECT COUNT(DISTINCT t.ticket_id)
 FROM purchases as p, ticket as t
 WHERE t.ticket_id = p.ticket_id 
-AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = ${lemonade.username})
+AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${lemonade.username}')
 GROUP BY p.customer_email
 );
 
@@ -139,7 +139,7 @@ GROUP BY p.customer_email
 SELECT f.arrival_airport
 FROM purchases as p, ticket as t, flight as f
 WHERE p.ticket_id = t.ticket_id AND t.flight_num = f.flight_num AND t.airline_name = f.airline_name
-AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = ${lemonade.username})
+AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${lemonade.username}')
 AND p.purchase_date > DATE_SUB(curdate(),INTERVAL 3 MONTH)
 GROUP BY f.arrival_airport
 ORDER BY COUNT(DISTINCT t.ticket_id) 
@@ -153,7 +153,7 @@ LIMIT 3;
 SELECT f.arrival_airport
 FROM purchases as p, ticket as t, flight as f
 WHERE p.ticket_id = t.ticket_id AND t.flight_num = f.flight_num AND t.airline_name = f.airline_name
-AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = ${lemonade.username})
+AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${lemonade.username}')
 AND p.purchase_date > DATE_SUB(curdate(),INTERVAL 1 YEAR)
 GROUP BY f.arrival_airport
 ORDER BY COUNT(DISTINCT t.ticket_id) 
