@@ -317,8 +317,32 @@ app.post('/user_home_customer',(req,res)=>{
     //else if
 })
 
-// ttdd customer buy
-//app.post('/agent_search_flights',(req,res)=>{
+// customer buy
+app.post('/customer_search_upcoming',(req,res)=>{
+    const query = `SET @ticket_id := UNIX_TIMESTAMP(now());`
+    con.query(query,(error,result)=>{
+        if (error){
+            res.render('error',{message:error.message});
+        } else{
+            con.query(`INSERT INTO ticket VALUES(@ticket_id, '${req.body.input_airline}', ${req.body.select_flight})`,(error,results)=>{
+                if (error){
+                    res.render('error',{message:error.message});
+                } else {
+                    const query = `INSERT INTO purchases VALUES (@ticket_id, '${req.session.data.email}', NULL, NOW());`
+                    con.query(query,(error,result)=>{
+                        if (error){
+                            res.render('error',{message:error.message});
+                        }else{
+                            res.redirect('/user_home_customer');
+                        }
+                    })
+                }
+            })
+            
+        }
+    })
+
+})
 
 //AGENT
 app.post('/user_home_booking_agent',(req,res)=>{
@@ -407,7 +431,7 @@ app.post('/user_home_booking_agent',(req,res)=>{
                             if (error3){
                                 res.render('error',{message:error3.message});
                             } else {
-                                if (results1.length===0 || result2.length===0 || results3.length===0){
+                                if (results1.length===0 || results2.length===0 || results3.length===0){
                                     res.render('error',{message:'You probably need to work harder...'})
                                 }else{
                                     res.render('agent_view_commission',{total_commission:results1[0].total_commission, average_commission:results2[0].average_commission, total_tickets:results3[0].total_tickets});
