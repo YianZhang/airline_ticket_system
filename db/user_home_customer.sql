@@ -28,8 +28,7 @@ AND f.departure_time > now() AND p.customer_email = '${req.session.data.email}';
 SELECT SUM(f.price) as total_spending_in_the_past_year
 FROM purchases as p, ticket as t, flight as f
 WHERE p.ticket_id = t.ticket_id AND t.airline_name = f.airline_name AND t.flight_num = f.flight_num 
-AND p.customer_email = '${req.session.data.email}' AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 YEAR)
-GROUP BY p.customer_email;
+AND p.customer_email = '${req.session.data.email}' AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 YEAR);
 
 -- -----------------------------------------------------
 -- bar chart for month-wise money spent (last six months)

@@ -448,11 +448,29 @@ app.post('/user_home_booking_agent',(req,res)=>{
 })
 
 app.post('/agent_search_flights',(req,res)=>{
-    //agent buy
-    //todo identity check
-    console.log(req.body.purchase_ticket_for_customer, req.body.select_flight, req.body.input_airline);
-    //todo db query
-    res.redirect('/user_home_booking_agent');
+    const query = `SET @ticket_id := UNIX_TIMESTAMP(now());`
+    con.query(query,(error,result)=>{
+        if (error){
+            res.render('error',{message:error.message});
+        } else{
+            con.query(`INSERT INTO ticket VALUES(@ticket_id, '${req.body.input_airline}', ${req.body.select_flight})`,(error,results)=>{
+                if (error){
+                    res.render('error',{message:error.message});
+                } else {
+                    const query = `INSERT INTO purchases VALUES (@ticket_id, '${req.body.purchase_ticket_for_customer}', '${req.session.data.booking_agent_id}', NOW());`
+                    con.query(query,(error,result)=>{
+                        if (error){
+                            res.render('error',{message:error.message});
+                        }else{
+                            res.redirect('/user_home_booking_agent');
+                        }
+                    })
+                }
+            })
+            
+        }
+    })
+
 })
 
 app.post('/agent_view_commission',(req,res)=>{
