@@ -14,6 +14,7 @@ con.connect(function(err) {
 });
 
 con.query(`SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));`,(error,results)=>{if(error){console.error(error)}});
+
 con.query('SELECT * FROM Airline', function (error, results, fields) {
 	if (error) throw error;
 	console.log('The selection result is: ', results[0]);
@@ -39,7 +40,7 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const path = require('path');
-const { EDESTADDRREQ } = require('constants');
+const { EDESTADDRREQ, SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } = require('constants');
 const { read } = require('fs');
 
 const app = express();
@@ -85,6 +86,31 @@ app.use((req,res,next)=>{
     }
     
 });
+
+//for security
+app.use((req,res,next)=>{
+    con.query(`SELECT * FROM mysql.help_keyword`,(error,results)=>{
+        if (error){
+            console.log(error.message);
+            next();
+        } else {
+            const keywords = results.map((a)=>{return a.name});
+            //console.log(keywords);
+            const values = Object.values(req.body);
+            for (const value of values){
+                for (const kw of keywords){
+                    if (value.toLowerCase().includes(kw.toLowerCase())){
+                        res.end();
+                        console.log('gotcha');
+                    }
+                }
+            }
+
+            next();
+        }
+    })
+    
+})
 
 app.use(express.static(path.join(__dirname, 'public'),{index:false,extensions:['html']}));
  
