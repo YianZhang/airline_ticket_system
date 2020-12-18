@@ -560,7 +560,19 @@ app.post('/user_home_airline_staff',(req,res)=>{
         });
     } else if (req.body.action==="create_new_flights"){
         //todo db query
-        res.render('staff_create_flights',{content:'test'});
+        const query = `SELECT f.airline_name, f.flight_num, f.departure_airport, f.departure_time, 
+        f.arrival_airport, f.arrival_time, f.status
+        FROM flight as f, airline_staff as s
+        WHERE s.airline_name = f.airline_name AND s.username = '${req.session.data.username}' AND f.departure_time > now()
+        AND f.departure_time < DATE_ADD(now(),INTERVAL 30 DAY);`;
+        con.query(query,(error,results)=>{
+            if (error){
+                res.render('error',{message:error.message});
+            } else {
+                res.render('staff_create_flights',{content:stringify(results)});
+            }
+        })
+        
     } else if (req.body.action==="change_status_of_flights"){
         res.render('staff_flight_status');
     } else if (req.body.action==="add_airplane_in_the_system"){
@@ -592,6 +604,21 @@ app.post('/staff_view_my_flights',(req,res)=>{
         }
     });
 })
+
+app.post('/staff_create_flights',(req,res)=>{
+    const query = `INSERT INTO flight VALUES (
+        (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}'),
+        ${req.body.flight_num}, '${req.body.dept_airport}', 
+        '${req.body.dept_time}', '${req.body.arrival_airport}', 
+        '${req.body.arrival_time}', ${req.body.price}, '${req.body.status}', ${req.body.airplane_id});`
+    con.query(query,(error,results)=>{
+        if (error){
+            res.render('error',{message:error.message});
+        } else {
+            res.redirect('/user_home_airline_staff');
+        }
+    });
+});
 
 //todo: post staff_flight_status  (change status)
 //todo: post staff_add_airplane
