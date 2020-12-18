@@ -408,9 +408,11 @@ app.post('/user_home_booking_agent',(req,res)=>{
                                 res.render('error',{message:error3.message});
                             } else {
                                 if (results1.length===0 || result2.length===0 || results3.length===0){
-                                    res.render('error',{message:'You probably need to work harder...')
+                                    res.render('error',{message:'You probably need to work harder...'})
+                                }else{
+                                    res.render('agent_view_commission',{total_commission:results1[0].total_commission, average_commission:results2[0].average_commission, total_tickets:results3[0].total_tickets});
                                 }
-                                res.render('agent_view_commission',{total_commission:results1[0].total_commission, average_commission:results2[0].average_commission, total_tickets:results3[0].total_tickets})
+                                
                             }
                         })
                     }
