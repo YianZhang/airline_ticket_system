@@ -699,6 +699,56 @@ app.post('/user_home_airline_staff',(req,res)=>{
     }
     else if (req.body.action==="view_reports"){
         res.render('staff_report');
+    } else if (req.body.action==="comparison_of_revenue_earned"){
+        const query1 = `SELECT SUM(f.price) as value
+        FROM purchases as p, ticket as t, flight as f
+        WHERE p.ticket_id = t.ticket_id AND f.airline_name = t.airline_name AND f.flight_num = t.flight_num
+        AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}')
+        AND p.booking_agent_id is null AND p.purchase_date > DATE_SUB(now(), INTERVAL 1 MONTH);`;
+
+        const query2 = `SELECT SUM(f.price) as value
+        FROM purchases as p, ticket as t, flight as f
+        WHERE p.ticket_id = t.ticket_id AND f.airline_name = t.airline_name AND f.flight_num = t.flight_num
+        AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}')
+        AND p.booking_agent_id is null AND p.purchase_date > DATE_SUB(now(), INTERVAL 1 YEAR);`;
+
+        const query3 = `SELECT SUM(f.price) as value
+        FROM purchases as p, ticket as t, flight as f
+        WHERE p.ticket_id = t.ticket_id AND f.airline_name = t.airline_name AND f.flight_num = t.flight_num
+        AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}')
+        AND p.booking_agent_id is not null AND p.purchase_date > DATE_SUB(now(), INTERVAL 1 MONTH);`;
+
+        const query4 = `SELECT SUM(f.price) as value
+        FROM purchases as p, ticket as t, flight as f
+        WHERE p.ticket_id = t.ticket_id AND f.airline_name = t.airline_name AND f.flight_num = t.flight_num
+        AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}')
+        AND p.booking_agent_id is not null AND p.purchase_date > DATE_SUB(now(), INTERVAL 1 YEAR);` ;
+
+        con.query(query1,(error1,results1)=>{
+            if (error1){
+                res.render('error',{message:error1.messasge});
+            } else {
+                con.query(query2, (error2, results2)=>{
+                    if (error2){
+                        res.render('error',{message:error2.message});
+                    } else {
+                        con.query(query3, (error3, results3)=>{
+                            if (error3){
+                                res.render('error',{message:error2.message});
+                            } else {
+                                con.query(query4, (error4,results4)=>{
+                                    if (error4){
+                                        res.render('error',{message:error2.message});
+                                    } else {
+                                        res.render('staff_compare',{x1:results1[0].value,y1:results2[0].value, x2:results3[0].value,y2:results4[0].value});
+                                    }
+                                })
+                            }
+                        })
+                    }
+                })
+            }
+        })
     }
 })
 

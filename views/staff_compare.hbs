@@ -20,7 +20,8 @@
         Render
     </button>
     <div class="container">
-        <canvas id="myChart"></canvas>
+        <canvas id="pieChart1"></canvas>
+        <canvas id="pieChart2"></canvas>
     </div>
 
 </body>
@@ -29,24 +30,67 @@
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script >
     function renderChart(data, labels) {
-    var ctx = document.getElementById("myChart").getContext('2d');
-    var myChart = new Chart(ctx, {
+        var labels = [
+        "direct",
+        "indirect",
+        ];
+        var data1 = [
+            {{x1}},
+            {{y1}},
+        ];
+        var data2 = [
+            {{x2}},
+            {{y2}},
+        ];
+        var pie1 = document.getElementById("pieChart1").getContext('2d');
+        var pie2 = document.getElementById("pieChart2").getContext('2d');
+        var myChart = new Chart(pie1, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        data: data1,
+                        borderColor: ['rgba(75, 192, 192, 1)', 'rgba(192, 0, 0, 1)'],
+                        backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(192, 0, 0, 0.2)'],
+                    }
+                ]
+            },
+            options: {
+                title: {
+                    display: true,
+                    text: "last month"
+                }
+            }
+        });
+        
+        //year
+        
+        var myChart = new Chart(pie2, {
         type: 'pie',
         data: {
             labels: labels,
-            datasets: [{
-                label: 'staff compare',
-                data: data,
-            }]
+            datasets: [
+                {
+                    data: data2,
+                    borderColor: ['rgba(75, 192, 192, 1)', 'rgba(192, 0, 0, 1)'],
+                    backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(192, 0, 0, 0.2)'],
+                }
+            ]
         },
+        options: {
+            title: {
+                display: true,
+                text: "Last year"
+            }
+        }
     });
-  }
+    
+    }
   
   $("#renderBtn").click(
     function () {
-        data = {{data}};
-        labels =  {{labels}};
-        renderChart(data, labels);
+        renderChart();
     }
   );
 </script>
