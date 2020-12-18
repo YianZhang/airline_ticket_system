@@ -579,7 +579,8 @@ app.post('/user_home_airline_staff',(req,res)=>{
         AND s.airline_name = t.airline_name
         AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 MONTH)
         AND p.booking_agent_id is not null
-        GROUP BY p.booking_agent_id;`
+        GROUP BY p.booking_agent_id;
+        LIMIT 5；`
 
         const query2 = `SELECT p.booking_agent_id, COUNT(t.ticket_id) as total_number_of_ticket_sales
         FROM purchases as p, ticket as t, airline_staff as s
@@ -587,7 +588,8 @@ app.post('/user_home_airline_staff',(req,res)=>{
         AND s.airline_name = t.airline_name
         AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 YEAR)
         AND p.booking_agent_id is not null
-        GROUP BY p.booking_agent_id;`
+        GROUP BY p.booking_agent_id;
+        LIMIT 5；`
         
         const query3 = `SELECT p.booking_agent_id, 0.1 * SUM(f.price) as total_amount_of_commission_received
         FROM purchases as p, ticket as t, flight as f, airline_staff as s
@@ -595,7 +597,8 @@ app.post('/user_home_airline_staff',(req,res)=>{
         AND t.airline_name = s.airline_name
         AND s.username = '${req.session.data.username}' AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 YEAR)
         AND p.booking_agent_id is not null
-        GROUP BY p.booking_agent_id;`
+        GROUP BY p.booking_agent_id;
+        LIMIT 5；`
 
         con.query(query1, function(error1, results1){
             if (error1){
@@ -745,5 +748,41 @@ app.post('/staff_flight_status',(req,res)=>{
         }
     });
 });
+
+app.post('/staff_top_destinations', (req,res)=>{
+    const query1 = `SELECT f.arrival_airport
+    FROM purchases as p, ticket as t, flight as f
+    WHERE p.ticket_id = t.ticket_id AND t.flight_num = f.flight_num AND t.airline_name = f.airline_name
+    AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}')
+    AND p.purchase_date > DATE_SUB(curdate(),INTERVAL 3 MONTH)
+    GROUP BY f.arrival_airport
+    ORDER BY COUNT(DISTINCT t.ticket_id) 
+    DESC
+    LIMIT 3;`
+
+    const query2 = `SELECT f.arrival_airport
+    FROM purchases as p, ticket as t, flight as f
+    WHERE p.ticket_id = t.ticket_id AND t.flight_num = f.flight_num AND t.airline_name = f.airline_name
+    AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}')
+    AND p.purchase_date > DATE_SUB(curdate(),INTERVAL 1 YEAR)
+    GROUP BY f.arrival_airport
+    ORDER BY COUNT(DISTINCT t.ticket_id) 
+    DESC
+    LIMIT 3;`
+
+    con.query(query1, function(error1, results1){
+        if (error1){
+            res.render('error',{message:error1.message});
+        } else {
+            con.query(query2, function(error2,results2){
+                if (error2){
+                    res.render('error',{message:error2.message});
+                } else {
+                    res.render('staff_top_destinations',{dest_months:stringify(results1),dest_year:stringify(results2)});
+                }
+            })
+        }
+    });
+})
 app.listen(3000);
 console.log('running');

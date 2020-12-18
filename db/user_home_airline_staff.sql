@@ -76,6 +76,7 @@ AND s.airline_name = t.airline_name
 AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 MONTH)
 AND p.booking_agent_id is not null
 GROUP BY p.booking_agent_id;
+LIMIT 5；
 
 -- top 5 booking agents based on number of ticket sales for the past year
 
@@ -86,6 +87,7 @@ AND s.airline_name = t.airline_name
 AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 YEAR)
 AND p.booking_agent_id is not null
 GROUP BY p.booking_agent_id;
+LIMIT 5；
 
 -- top 5 booking agents based on the amount of commission received for the last year
 
@@ -96,7 +98,7 @@ AND t.airline_name = s.airline_name
 AND s.username = '${req.session.data.username}' AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 YEAR)
 AND p.booking_agent_id is not null
 GROUP BY p.booking_agent_id;
-
+LIMIT 5；
 -- -----------------------------------------------------
 
 -- sql for "view frequent customers" 
