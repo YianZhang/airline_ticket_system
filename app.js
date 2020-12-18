@@ -480,7 +480,8 @@ app.post('/user_home_booking_agent',(req,res)=>{
             } else{
                 const {p1,p2} = disentangle(results1);
                 console.log('['+p2.toString()+']','['+p1.toString()+']');
-                res.render('agent_view_customer',{data:'['+p2.toString()+']',labels:'['+p1.toString()+']'});
+                //res.render('agent_view_customer',{data:'['+p2.toString()+']',labels:'['+p1.toString()+']'});
+                res.render('agent_view_customer',{data:'['+p2.toString()+']',labels:'[1]'});
                 //res.render('agent_view_customer',{data:'[1,2,3]',labels:'[1,2,3]'});
             }
         })
@@ -621,7 +622,7 @@ app.post('/user_home_airline_staff',(req,res)=>{
         AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 MONTH)
         AND p.booking_agent_id is not null
         GROUP BY p.booking_agent_id;
-        LIMIT 5；`
+        LIMIT 5;`
 
         const query2 = `SELECT p.booking_agent_id, COUNT(t.ticket_id) as total_number_of_ticket_sales
         FROM purchases as p, ticket as t, airline_staff as s
@@ -630,7 +631,7 @@ app.post('/user_home_airline_staff',(req,res)=>{
         AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 YEAR)
         AND p.booking_agent_id is not null
         GROUP BY p.booking_agent_id;
-        LIMIT 5；`
+        LIMIT 5;`
         
         const query3 = `SELECT p.booking_agent_id, 0.1 * SUM(f.price) as total_amount_of_commission_received
         FROM purchases as p, ticket as t, flight as f, airline_staff as s
@@ -639,7 +640,7 @@ app.post('/user_home_airline_staff',(req,res)=>{
         AND s.username = '${req.session.data.username}' AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 YEAR)
         AND p.booking_agent_id is not null
         GROUP BY p.booking_agent_id;
-        LIMIT 5；`
+        LIMIT 5;`
 
         con.query(query1, function(error1, results1){
             if (error1){
