@@ -99,9 +99,9 @@ app.use((req,res,next)=>{
             const values = Object.values(req.body);
             for (const value of values){
                 for (const kw of keywords){
-                    if (value.toLowerCase().includes(kw.toLowerCase())){
+                    if (value.toLowerCase().includes(' '+kw.toLowerCase()+' ')){
                         res.end();
-                        console.log('gotcha');
+                        console.log('gotcha',value,kw);
                     }
                 }
             }
@@ -371,7 +371,7 @@ app.post('/customer_track_spending',(req,res)=>{
     AND p.customer_email = '${req.session.data.email}' AND p.purchase_date >= '${req.body.start_month}'
     AND p.purchase_date <= '${req.body.end_month}'
     GROUP BY YEAR(p.purchase_date), MONTH(p.purchase_date);`
-
+ 
         con.query(query,(error,results)=>{
             if (error){
                 console.log(query);
