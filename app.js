@@ -453,8 +453,39 @@ app.post('/user_home_booking_agent',(req,res)=>{
                 })
             }
         })
+    } else if (req.body.action==='view_top_customer'){
+        const query1 = `SELECT c.name as x, COUNT(p.ticket_id) as y
+        FROM purchases as p, customer as c
+        WHERE p.customer_email = c.email 
+        AND p.booking_agent_id = (SELECT booking_agent_id FROM booking_agent WHERE email = '${req.session.data.email}') 
+        AND p.purchase_date > DATE_SUB(now(),INTERVAL 6 MONTH)
+        GROUP BY p.customer_email
+        ORDER BY y DESC
+        LIMIT 5;`;
+
+        const query2 = `SELECT c.name as x, 0.1 * SUM(f.price) as y
+        FROM purchases as p, ticket as t, flight as f, customer as c
+        WHERE p.ticket_id = t.ticket_id AND t.airline_name = f.airline_name 
+        AND t.flight_num = f.flight_num AND p.customer_email = c.email 
+        AND p.booking_agent_id = (SELECT booking_agent_id FROM booking_agent WHERE email = '${req.session.data.email}') 
+        AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 YEAR)
+        GROUP BY p.customer_email
+        ORDER BY y DESC
+        LIMIT 5;`;
+
+        con.query(query1,(error1, results1)=>{
+            if (error1){
+                console.log(query1);
+                res.render('error',{message:error1.message});
+            } else{
+                const {p1,p2} = disentangle(results1);
+                console.log('['+p2.toString()+']','['+p1.toString()+']');
+                res.render('agent_view_customer',{data:'['+p2.toString()+']',labels:'['+p1.toString()+']'});
+                //res.render('agent_view_customer',{data:'[1,2,3]',labels:'[1,2,3]'});
+            }
+        })
     }
-    //todo: db query
+    
 })
 
 app.post('/agent_search_flights',(req,res)=>{
@@ -706,13 +737,13 @@ app.post('/user_home_airline_staff',(req,res)=>{
         AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}')
         AND p.booking_agent_id is null AND p.purchase_date > DATE_SUB(now(), INTERVAL 1 MONTH);`;
 
-        const query2 = `SELECT SUM(f.price) as value
+        const query3 = `SELECT SUM(f.price) as value
         FROM purchases as p, ticket as t, flight as f
         WHERE p.ticket_id = t.ticket_id AND f.airline_name = t.airline_name AND f.flight_num = t.flight_num
         AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}')
         AND p.booking_agent_id is null AND p.purchase_date > DATE_SUB(now(), INTERVAL 1 YEAR);`;
 
-        const query3 = `SELECT SUM(f.price) as value
+        const query2 = `SELECT SUM(f.price) as value
         FROM purchases as p, ticket as t, flight as f
         WHERE p.ticket_id = t.ticket_id AND f.airline_name = t.airline_name AND f.flight_num = t.flight_num
         AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}')
