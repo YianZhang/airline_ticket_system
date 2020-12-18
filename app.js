@@ -623,6 +623,18 @@ app.post('/staff_create_flights',(req,res)=>{
 
 //todo: post staff_flight_status  (change status)
 //todo: post staff_add_airplane
+app.post('/staff_add_airplane',(req,res)=>{
+    const query =  `INSERT INTO airplane VALUES (
+        (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}'), 
+        ${req.body.airplane_id}, ${req.body.seats});`
+    con.query(query,(error,results)=>{
+        if (error){
+            res.render('error',{message:error.message});
+        } else {
+            res.redirect('/user_home_airline_staff');
+        }
+    });
+});
 //todo: post staff_add_airport
 //todo: post staff_freq_customer
 //todo: post staff_reports
@@ -638,6 +650,6 @@ app.post('/staff_flight_status',(req,res)=>{
             res.redirect('/user_home_airline_staff');
         }
     });
-})
+});
 app.listen(3000);
 console.log('running');
