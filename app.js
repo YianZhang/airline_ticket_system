@@ -629,7 +629,26 @@ app.post('/user_home_airline_staff',(req,res)=>{
     } else if (req.body.action==="add_new_airport_in_the_system"){
         res.render('staff_add_airport');
     } else if (req.body.action==="view_frequent_customers"){
-        res.render('staff_freq_customer');
+        const query = `SELECT p.customer_email as top_customer -- , COUNT(DISTINCT t.ticket_id) as total_number_of_tickets_purchased
+        FROM purchases as p, ticket as t
+        WHERE t.ticket_id = p.ticket_id 
+        AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}')
+        AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 YEAR)
+        GROUP BY p.customer_email
+        HAVING COUNT(DISTINCT t.ticket_id) >= all (
+        SELECT COUNT(DISTINCT t.ticket_id)
+        FROM purchases as p, ticket as t
+        WHERE t.ticket_id = p.ticket_id 
+        AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}')
+        GROUP BY p.customer_email
+        );`;
+        con.query(query,(error,results)=>{
+            if (error){
+                res.render('error',{message:error.message});
+            } else {
+                res.render('staff_freq_customer',{top_customer:stringify(results)});
+            }
+        });
     } else if (req.body.action==="view_reports"){
         res.render('staff_reports');
     }
@@ -696,7 +715,22 @@ app.post('/staff_add_airport',(req,res)=>{
     });
 });
 
-//todo: post staff_freq_customer
+app.post('/staff_freq_customer',(req,res)=>{
+    const query = `SELECT f.airline_name, f.flight_num, f.departure_airport,
+    f.departure_time, f.arrival_airport, f.arrival_time, f.status, f.airplane_id
+    FROM purchases as p, ticket as t, flight as f
+    WHERE p.ticket_id = t.ticket_id AND t.airline_name = f.airline_name 
+    AND t.flight_num = f.flight_num AND p.customer_email = '${req.body.email}'
+    AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}');
+    `;
+    con.query(query, (error,results)=>{
+        if (error){
+            res.render('error',{message:error.message});
+        } else {
+            res.render('staff_plain',{content:stringify(results)});
+        }
+    })
+})
 //todo: post staff_reports
 app.post('/staff_flight_status',(req,res)=>{
     const query =  `UPDATE flight
