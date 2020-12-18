@@ -9,8 +9,7 @@
 SELECT DATE_FORMAT(p.purchase_date,'%Y-%m') as x, SUM(f.price) as y
 FROM purchases as p, ticket as t, flight as f
 WHERE p.ticket_id = t.ticket_id AND t.airline_name = f.airline_name AND t.flight_num = f.flight_num 
-AND p.customer_email = '${req.session.data.email}' AND p.purchase_date >= '${req.body.start_month}'
-AND p.purchase_date <= '${req.body.end_month}'
+AND p.customer_email = '${req.session.data.email}' AND p.purchase_date >= CONCAT('${req.body.start_month}', '-1')
+AND p.purchase_date <= CONCAT('${req.body.end_month}','-31')
 GROUP BY YEAR(p.purchase_date), MONTH(p.purchase_date);
-
 -- -----------------------------------------------------

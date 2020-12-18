@@ -368,21 +368,21 @@ app.post('/customer_track_spending',(req,res)=>{
     const query = `SELECT DATE_FORMAT(p.purchase_date,'%Y-%m') as x, SUM(f.price) as y
     FROM purchases as p, ticket as t, flight as f
     WHERE p.ticket_id = t.ticket_id AND t.airline_name = f.airline_name AND t.flight_num = f.flight_num 
-    AND p.customer_email = '${req.session.data.email}' AND p.purchase_date >= '${req.body.start_month}'
-    AND p.purchase_date <= '${req.body.end_month}'
+    AND p.customer_email = '${req.session.data.email}' AND p.purchase_date >= CONCAT('${req.body.start_month}', '-1')
+    AND p.purchase_date <= CONCAT('${req.body.end_month}','-31')
     GROUP BY YEAR(p.purchase_date), MONTH(p.purchase_date);`
  
-        con.query(query,(error,results)=>{
-            if (error){
-                console.log(query);
-                res.render('error',{message:error.message});
-            } else {
-                const {p1,p2} = disentangle(results);
-                console.log(p1.toString(),p2.toString());
-                res.render('customer_track_spending',{data:'['+p2.toString()+']',labels:'['+p1.toString()+']'});
-                //res.render('staff_report',{data:'[1,2,3]',labels:'[1,2,3]'});
-            }
-        });
+    con.query(query,(error,results)=>{
+        if (error){
+            console.log(query);
+            res.render('error',{message:error.message});
+        } else {
+            const {p1,p2} = disentangle(results);
+            console.log(p1.toString(),p2.toString());
+            res.render('customer_track_spending',{data:'['+p2.toString()+']',labels:'['+p1.toString()+']'});
+            //res.render('staff_report',{data:'[1,2,3]',labels:'[1,2,3]'});
+        }
+    });
 })
 // customer buy
 app.post('/customer_search_upcoming',(req,res)=>{
