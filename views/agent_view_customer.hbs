@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 
+{{labels}}
 <html lang="en">
 
 <head>
@@ -20,7 +21,17 @@
         Render
     </button>
     <div class="container">
-        <canvas id="myChart"></canvas>
+        <canvas id="myChart1" width="986" height="492" class="chartjs-render-monitor" style="display: block; height: 246px; width: 493px;"></canvas>
+    </div>
+    <div> v
+        v
+        v
+        v
+        v
+        
+        </div>
+    <div class="container">
+        <canvas id="myChart2" width="986" height="492" class="chartjs-render-monitor" style="display: block; height: 246px; width: 493px;"></canvas>
     </div>
 
 </body>
@@ -28,25 +39,52 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script >
-    function renderChart(data, labels) {
-    var ctx = document.getElementById("myChart").getContext('2d');
-    var myChart = new Chart(ctx, {
+
+    function renderChart1(data, labels) {
+    var ctx1 = document.getElementById("myChart1").getContext('2d');
+    var myChart = new Chart(ctx1, {
         type: 'bar',
         data: {
             labels: labels,
             datasets: [{
-                label: 'staff report',
+                label: 'ticket',
                 data: data,
             }]
         },
     });
   }
+
+    function renderChart2(data, labels) {
+        var ctx2 = document.getElementById("myChart2").getContext('2d');
+        var myChart = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'ticket',
+                    data: data,
+                }]
+            },
+        });
+    }
   
   $("#renderBtn").click(
     function () {
-        data = {{data}};
-        labels =  {{labels}};
-        renderChart(data, labels);
+        data1 = {{data1}};
+        l1 = "{{labels1}}";
+        labels1 =  l1.split(',');
+
+        data2 = {{data2}};
+        l2 = "{{labels2}}";
+        labels2 =  l2.split(',');
+        
+        //data = [1];
+        //labels = ['yian zhang'];
+        //console.log('12345');
+        //console.log(data,labels);
+        //console.log(data,labels);
+        renderChart1(data1, labels1);
+        renderChart1(data2, labels2);
     }
   );
 </script>

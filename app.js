@@ -478,10 +478,30 @@ app.post('/user_home_booking_agent',(req,res)=>{
                 console.log(query1);
                 res.render('error',{message:error1.message});
             } else{
-                const {p1,p2} = disentangle(results1);
-                console.log('['+p2.toString()+']','['+p1.toString()+']');
+                
+                //console.log(p2,p1.map(a=>{return'"'+a+'"'}));
+                //const p2 = [1,2];
+                //const p1 = ['sam','yian']
+                //console.log('['+p2.toString()+']','"'+p1.toString()+'"');
                 //res.render('agent_view_customer',{data:'['+p2.toString()+']',labels:'['+p1.toString()+']'});
-                res.render('agent_view_customer',{data:'['+p2.toString()+']',labels:'[yian]'});
+                //res.render('agent_view_customer',{data:'['+p2.toString()+']',labels:"yian"});
+                
+                con.query(query2,(error2,results2)=>{
+                    if (error2){
+                        res.render('error',{message:error2.message});
+                    } else{
+                        let v = disentangle(results1);
+                        const a = v.p1;
+                        const b = v.p2;
+                        v = disentangle(results2);
+                        const c = v.p1;
+                        const d = v.p2;
+                        console.log(a,b,c,d);
+                        res.render('agent_view_customer',{data1:'['+b.toString()+']',labels1:a.toString(), data2:'['+d.toString()+']',labels2:c.toString()});
+                    }
+                });
+                
+                
                 //res.render('agent_view_customer',{data:'[1,2,3]',labels:'[1,2,3]'});
             }
         })
