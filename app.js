@@ -572,6 +572,55 @@ app.post('/user_home_airline_staff',(req,res)=>{
                 res.render('staff_create_flights',{content:stringify(results)});
             }
         })
+    } else if (req.body.action==="view_all_the_booking_agents"){
+        const query1 = `SELECT p.booking_agent_id, COUNT(t.ticket_id) as total_number_of_ticket_sales
+        FROM purchases as p, ticket as t, airline_staff as s
+        WHERE p.ticket_id = t.ticket_id AND s.username = '${req.session.data.username}'
+        AND s.airline_name = t.airline_name
+        AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 MONTH)
+        AND p.booking_agent_id is not null
+        GROUP BY p.booking_agent_id;`
+
+        const query2 = `SELECT p.booking_agent_id, COUNT(t.ticket_id) as total_number_of_ticket_sales
+        FROM purchases as p, ticket as t, airline_staff as s
+        WHERE p.ticket_id = t.ticket_id AND s.username = '${req.session.data.username}'
+        AND s.airline_name = t.airline_name
+        AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 YEAR)
+        AND p.booking_agent_id is not null
+        GROUP BY p.booking_agent_id;`
+        
+        const query3 = `SELECT p.booking_agent_id, 0.1 * SUM(f.price) as total_amount_of_commission_received
+        FROM purchases as p, ticket as t, flight as f, airline_staff as s
+        WHERE p.ticket_id = t.ticket_id AND t.airline_name = f.airline_name AND t.flight_num = f.flight_num 
+        AND t.airline_name = s.airline_name
+        AND s.username = '${req.session.data.username}' AND p.purchase_date > DATE_SUB(now(),INTERVAL 1 YEAR)
+        AND p.booking_agent_id is not null
+        GROUP BY p.booking_agent_id;`
+
+        con.query(query1, function(error1, results1){
+            if (error1){
+                res.render('error',{message:error1.message});
+            } else {
+                console.log(results1);
+                con.query(query2, function(error2,results2){
+                    if (error2){
+                        res.render('error',{message:error2.message});
+                    } else {
+                        con.query(query3, function(error3, results3){
+                            if (error3){
+                                res.render('error',{message:error3.message});
+                            } else {
+                                if (results1.length===0 || results2.length===0 || results3.length===0){
+                                    res.render('error',{message:'not enough agents'})
+                                }else{
+                                    res.render('staff_view_agents',{ticket_month:stringify(results1),ticket_year:stringify(results2),commission_year:stringify(results3)}); 
+                                }
+                            }
+                        })
+                    }
+                })
+            }
+        });
         
     } else if (req.body.action==="change_status_of_flights"){
         res.render('staff_flight_status');
