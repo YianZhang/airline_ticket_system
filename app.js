@@ -29,7 +29,7 @@ const disentangle = function(lofo){
     console.log('lofo');
     console.log(lofo);
     let p1, p2;
-    p1 = lofo.map((a)=>{return a['x']});
+    p1 = lofo.map((a)=>{return a['x'].toString()});
     p2 = lofo.map((a)=>{return a.y});
     return {p1, p2}
 }
