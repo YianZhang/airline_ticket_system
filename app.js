@@ -652,10 +652,44 @@ app.post('/user_home_airline_staff',(req,res)=>{
                 res.render('staff_freq_customer',{top_customer:stringify(results)});
             }
         });
-    } else if (req.body.action==="view_reports"){
+    } else if (req.body.action==="view_top_destinations"){
+        const query1 = `SELECT f.arrival_airport
+        FROM purchases as p, ticket as t, flight as f
+        WHERE p.ticket_id = t.ticket_id AND t.flight_num = f.flight_num AND t.airline_name = f.airline_name
+        AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}')
+        AND p.purchase_date > DATE_SUB(curdate(),INTERVAL 3 MONTH)
+        GROUP BY f.arrival_airport
+        ORDER BY COUNT(DISTINCT t.ticket_id) 
+        DESC
+        LIMIT 3;`
+
+        const query2 = `SELECT f.arrival_airport
+        FROM purchases as p, ticket as t, flight as f
+        WHERE p.ticket_id = t.ticket_id AND t.flight_num = f.flight_num AND t.airline_name = f.airline_name
+        AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}')
+        AND p.purchase_date > DATE_SUB(curdate(),INTERVAL 1 YEAR)
+        GROUP BY f.arrival_airport
+        ORDER BY COUNT(DISTINCT t.ticket_id) 
+        DESC
+        LIMIT 3;`
+
+        con.query(query1, function(error1, results1){
+            if (error1){
+                res.render('error',{message:error1.message});
+            } else {
+                con.query(query2, function(error2,results2){
+                    if (error2){
+                        res.render('error',{message:error2.message});
+                    } else {
+                        res.render('staff_top_destinations',{dest_months:stringify(results1),dest_year:stringify(results2)});
+                    }
+                })
+            }
+        });
+    }
+    else if (req.body.action==="view_reports"){
         res.render('staff_reports');
     }
-    //else if
 })
 
 app.post('/staff_view_my_flights',(req,res)=>{
@@ -749,40 +783,5 @@ app.post('/staff_flight_status',(req,res)=>{
     });
 });
 
-app.post('/staff_top_destinations', (req,res)=>{
-    const query1 = `SELECT f.arrival_airport
-    FROM purchases as p, ticket as t, flight as f
-    WHERE p.ticket_id = t.ticket_id AND t.flight_num = f.flight_num AND t.airline_name = f.airline_name
-    AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}')
-    AND p.purchase_date > DATE_SUB(curdate(),INTERVAL 3 MONTH)
-    GROUP BY f.arrival_airport
-    ORDER BY COUNT(DISTINCT t.ticket_id) 
-    DESC
-    LIMIT 3;`
-
-    const query2 = `SELECT f.arrival_airport
-    FROM purchases as p, ticket as t, flight as f
-    WHERE p.ticket_id = t.ticket_id AND t.flight_num = f.flight_num AND t.airline_name = f.airline_name
-    AND t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}')
-    AND p.purchase_date > DATE_SUB(curdate(),INTERVAL 1 YEAR)
-    GROUP BY f.arrival_airport
-    ORDER BY COUNT(DISTINCT t.ticket_id) 
-    DESC
-    LIMIT 3;`
-
-    con.query(query1, function(error1, results1){
-        if (error1){
-            res.render('error',{message:error1.message});
-        } else {
-            con.query(query2, function(error2,results2){
-                if (error2){
-                    res.render('error',{message:error2.message});
-                } else {
-                    res.render('staff_top_destinations',{dest_months:stringify(results1),dest_year:stringify(results2)});
-                }
-            })
-        }
-    });
-})
 app.listen(3000);
 console.log('running');
