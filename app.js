@@ -635,7 +635,18 @@ app.post('/staff_add_airplane',(req,res)=>{
         }
     });
 });
-//todo: post staff_add_airport
+
+app.post('/staff_add_airport',(req,res)=>{
+    const query =  `INSERT INTO airport VALUES ('${req.body.airport_name}', '${req.body.airport_city}');`
+    con.query(query,(error,results)=>{
+        if (error){
+            res.render('error',{message:error.message});
+        } else {
+            res.redirect('/user_home_airline_staff');
+        }
+    });
+});
+
 //todo: post staff_freq_customer
 //todo: post staff_reports
 app.post('/staff_flight_status',(req,res)=>{
