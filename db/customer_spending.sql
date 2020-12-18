@@ -6,7 +6,7 @@
 -- start_month (this should include year! and in DATE format)
 -- end_month (this should include year! and in DATE format)
 
-SELECT DATE_FORMAT(p.purchase_date,'%Y-%m'), SUM(f.price) as spending_per_month
+SELECT DATE_FORMAT(p.purchase_date,'%Y-%m') as x, SUM(f.price) as y
 FROM purchases as p, ticket as t, flight as f
 WHERE p.ticket_id = t.ticket_id AND t.airline_name = f.airline_name AND t.flight_num = f.flight_num 
 AND p.customer_email = '${req.session.data.email}' AND p.purchase_date >= '${req.body.start_month}'

@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<h1>customer_spending</h1>
+<a href="/user_home_customer">user_home_customer</a>
+
+total amount of money spent in the past year: {{total_spending_in_the_past_year}}
+
+
+<div>step1: submit</div>
+<div>step2: render</div>
+<form method='post' action='/customer_track_spending'> 
+    <div>
+        start_month: <input type='text' name="start_month">
+    </div> 
+    <div>
+        end_month: <input type='text' name="end_month">
+    </div> 
+    <input type="submit" value="submit" />
+</form>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Exploring Chart.js</title>
+</head>
+<style>
+    .container {
+        width: 50%;
+        height: 50%;
+    }
+</style>
+<body>
+
+    <button id="renderBtn">
+        Render
+    </button>
+    <div class="container">
+        <canvas id="myChart"></canvas>
+    </div>
+
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.js"></script>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script >
+    function renderChart(data, labels) {
+    var ctx = document.getElementById("myChart").getContext('2d');
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'track_spending',
+                data: data,
+            }]
+        },
+    });
+  }
+  
+  $("#renderBtn").click(
+    function () {
+        data = {{data}};
+        labels =  {{labels}};
+        renderChart(data, labels);
+    }
+  );
+</script>
+
+</html>
+
