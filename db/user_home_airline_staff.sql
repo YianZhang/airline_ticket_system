@@ -22,20 +22,19 @@ AND f.departure_time < DATE_ADD(now(),INTERVAL 30 DAY);
 -- user type: staff
 -- input variable: 
 -- username (extracted from user info)
--- flight_num
--- dept_airport
--- arrival_airport
 -- start_date
 -- end_date
--- status
--- airplane_id
+-- choose one:
+-- departure_airport_or_city 
+-- arrival_airport_or_city
 
 SELECT f.airline_name, f.flight_num, f.departure_airport, f.departure_time, 
-f.arrival_airport, f.arrival_time, f.status
-FROM flight as f, airline_staff as s
-WHERE f.airline_name = s.airline_name AND s.username = '${req.session.data.username}' AND f.flight_num = ${req.body.flight_num} 
-AND f.departure_airport = '${req.body.dept_airport}' AND f.arrival_airport = '${req.body.arrival_airport}'
-AND f.status = '${req.body.status}' AND f.airplane_id = ${req.body.airplane_id}
+f.arrival_airport, f.arrival_time, f.status, f.airplane_id
+FROM flight as f, airline_staff as s, airport as dep_a, airport as arr_a
+WHERE f.airline_name = s.airline_name AND s.username = '${req.session.data.username}'
+AND f.arrival_airport = arr_a.airport_name AND f.departure_airport = dep_a.airport_name
+AND (f.departure_airport = '${req.body.departure_airport_or_city}' || dep_a.airport_city = '${req.body.departure_airport_or_city}' ||
+ f.arrival_airport = '${req.body.arrival_airport}' || arr_a.airport_city = '${req.body.arrival_airport_or_city}')
 AND f.departure_time > '${req.body.start_date}' AND f.departure_time < '${req.body.end_date}';
 
 -- see all customers of a particular flight -> staff_flight_search
