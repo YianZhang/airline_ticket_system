@@ -576,11 +576,21 @@ app.post('/user_home_airline_staff',(req,res)=>{
 })
 
 app.post('/staff_view_my_flights',(req,res)=>{
-    //agent view commission
-    //todo identity check
-    console.log(req.body);
-    //todo db query
-    //res.render
+    const query = `SELECT f.airline_name, f.flight_num, f.departure_airport, f.departure_time, 
+    f.arrival_airport, f.arrival_time, f.status
+    FROM flight as f, airline_staff as s
+    WHERE f.airline_name = s.airline_name AND s.username = '${req.session.data.username}' AND f.flight_num = ${req.body.flight_num} 
+    AND f.departure_airport = '${req.body.dept_airport}' AND f.arrival_airport = '${req.body.arrival_airport}'
+    AND f.status = '${req.body.status}' AND f.airplane_id = ${req.body.airplane_id}
+    AND f.departure_time > '${req.body.start_date}' AND f.departure_time < '${req.body.end_date}';`
+    
+    con.query(query,function(error,results){
+        if (error){
+            res.render('error',error.message);
+        }else{
+            res.render('staff_view_my_flights',{content:stringify(results)});
+        }
+    });
 })
 
 //todo: post staff_flight_status  (change status)
