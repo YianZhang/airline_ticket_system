@@ -626,5 +626,18 @@ app.post('/staff_create_flights',(req,res)=>{
 //todo: post staff_add_airport
 //todo: post staff_freq_customer
 //todo: post staff_reports
+app.post('/staff_flight_status',(req,res)=>{
+    const query =  `UPDATE flight
+    SET status = '${req.body.new_flight_status}'
+    WHERE airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}') 
+    AND flight_num = ${req.body.flight_num};`
+    con.query(query,(error,results)=>{
+        if (error){
+            res.render('error',{message:error.message});
+        } else {
+            res.redirect('/user_home_airline_staff');
+        }
+    });
+})
 app.listen(3000);
 console.log('running');

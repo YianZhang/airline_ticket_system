@@ -9,7 +9,7 @@
 
 
 UPDATE flight
-SET status = '${req.body.new_flight_status} '
+SET status = '${req.body.new_flight_status}'
 WHERE airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}') 
 AND flight_num = ${req.body.flight_num};
 
