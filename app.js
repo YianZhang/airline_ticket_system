@@ -13,6 +13,7 @@ con.connect(function(err) {
   console.log("Connected!");
 });
 
+con.query(`SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));`,(error,results)=>{if(error){console.error(error)}});
 con.query('SELECT * FROM Airline', function (error, results, fields) {
 	if (error) throw error;
 	console.log('The selection result is: ', results[0]);
@@ -22,6 +23,15 @@ const stringify = function(lofo){
     return lofo.reduce((acc,cur)=>{
         return acc+'\n'+JSON.stringify(cur);
     },'');
+}
+
+const disentangle = function(lofo){
+    console.log('lofo');
+    console.log(lofo);
+    let p1, p2;
+    p1 = lofo.map((a)=>{return a['x']});
+    p2 = lofo.map((a)=>{return a.y});
+    return {p1, p2}
 }
 
 
@@ -688,7 +698,7 @@ app.post('/user_home_airline_staff',(req,res)=>{
         });
     }
     else if (req.body.action==="view_reports"){
-        res.render('staff_reports');
+        res.render('staff_report');
     }
 })
 
@@ -769,6 +779,26 @@ app.post('/staff_freq_customer',(req,res)=>{
     })
 })
 //todo: post staff_reports
+app.post('/staff_report',(req,res)=>{
+    const query = `SELECT DATE_FORMAT(p.purchase_date,'%Y-%m') as x, COUNT(DISTINCT t.ticket_id) as y
+        FROM purchases as p, ticket as t
+        WHERE p.ticket_id = t.ticket_id AND 
+        t.airline_name = (SELECT airline_name FROM airline_staff WHERE username = '${req.session.data.username}')
+        AND p.purchase_date >= '${req.body.start_date}' AND p.purchase_date <= '${req.body.end_date}'
+        GROUP BY YEAR(p.purchase_date), MONTH(p.purchase_date);`
+
+        con.query(query,(error,results)=>{
+            if (error){
+                console.log(query);
+                res.render('error',{message:error.message});
+            } else {
+                const {p1,p2} = disentangle(results);
+                console.log(p1.toString(),p2.toString());
+                res.render('staff_report',{data:'['+p2.toString()+']',labels:'['+p1.toString()+']'});
+                //res.render('staff_report',{data:'[1,2,3]',labels:'[1,2,3]'});
+            }
+        });
+})
 app.post('/staff_flight_status',(req,res)=>{
     const query =  `UPDATE flight
     SET status = '${req.body.new_flight_status}'
